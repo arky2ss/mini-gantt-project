@@ -7,6 +7,28 @@ CRUD proyek/kegiatan/resource, perhitungan tanggal otomatis (lewati weekend & ha
 **Stack:** Node.js + Express + SQLite (memakai `node:sqlite` bawaan Node, tanpa kompilasi native)
 + frontend HTML/CSS/JS murni + `node:test` untuk unit test.
 
+## Tampilan Aplikasi
+
+### Gantt Chart
+![Gantt chart](docs/gantt.png)
+
+### Jadwal Kegiatan
+![Jadwal kegiatan](docs/gantt2.png)
+
+### Analisis Critical Path
+![Critical path](docs/gantt3.png)
+
+### Diagram PERT
+![Diagram PERT](docs/gantt4.png)
+
+### Resource
+![Resource](docs/gantt5.png)
+
+### Pengaturan
+![Pengaturan](docs/gantt6.png)
+
+
+
 ---
 
 ## Kebutuhan
