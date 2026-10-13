@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Gantt Project</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-icon">G</span>
+      <div>
+        <strong>Mini Gantt Project</strong>
+        <small>Penjadwalan proyek pengembangan perangkat lunak</small>
+      </div>
+    </div>
+    <div class="project-picker">
+      <label for="project-select">Proyek</label>
+      <select id="project-select"></select>
+      <button class="btn btn-ghost" id="btn-new-project" type="button">+ Proyek</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn active" data-tab="gantt" type="button">Gantt</button>
+    <button class="tab-btn" data-tab="activities" type="button">Kegiatan</button>
+    <button class="tab-btn" data-tab="paths" type="button">Jalur Kritis</button>
+    <button class="tab-btn" data-tab="pert" type="button">Diagram PERT</button>
+    <button class="tab-btn" data-tab="resources" type="button">Resource</button>
+    <button class="tab-btn" data-tab="settings" type="button">Pengaturan</button>
+  </nav>
+
+  <main>
+    <!-- ============================ GANTT ============================ -->
+    <section class="tab-panel active" id="tab-gantt">
+      <div class="cards" id="summary-cards"></div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Gantt Chart</h2>
+          <div class="legend">
+            <span><i class="sw sw-critical"></i> Jalur kritis</span>
+            <span><i class="sw sw-normal"></i> Kegiatan</span>
+            <span><i class="sw sw-weekend"></i> Weekend / hari libur</span>
+            <span><i class="sw sw-dep"></i> Ketergantungan (FS/SS)</span>
+          </div>
+        </div>
+        <div id="gantt-chart" class="gantt-host"></div>
+      </div>
+    </section>
+
+    <!-- =========================== KEGIATAN ========================== -->
+    <section class="tab-panel" id="tab-activities">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Daftar Kegiatan</h2>
+          <button class="btn btn-primary" id="btn-add-activity" type="button">+ Kegiatan</button>
+        </div>
+
+        <form id="activity-form" class="form-grid hidden">
+          <input type="hidden" id="activity-id" />
+          <div class="field">
+            <label for="activity-code">Kode</label>
+            <input id="activity-code" maxlength="10" placeholder="mis. A" />
+          </div>
+          <div class="field field-wide">
+            <label for="activity-name">Nama kegiatan *</label>
+            <input id="activity-name" required maxlength="200" placeholder="mis. Analisis Kebutuhan" />
+          </div>
+          <div class="field">
+            <label for="activity-duration">Durasi (hari kerja) *</label>
+            <input id="activity-duration" type="number" min="1" max="3650" required value="1" />
+          </div>
+
+          <div class="field field-wide">
+            <label>Kegiatan pendahulu (tipe &amp; delay)</label>
+            <div id="pred-list" class="pred-list"></div>
+            <button class="btn btn-ghost btn-sm" id="btn-add-pred" type="button">+ Tambah pendahulu</button>
+            <p class="hint">
+              FS = Finish-Start (mulai setelah pendahulu selesai) &middot;
+              SS = Start-Start (mulai bersamaan, delay dalam hari kerja).
+              Tanggal mulai &amp; selesai dihitung otomatis (lewati weekend &amp; hari libur).
+            </p>
+          </div>
+
+          <div class="field field-actions">
+            <button class="btn btn-primary" type="submit">Simpan</button>
+            <button class="btn" id="btn-cancel-activity" type="button">Batal</button>
+          </div>
+        </form>
+
+        <div class="table-wrap">
+          <table id="activity-table">
+            <thead>
+              <tr>
+                <th>Kode</th>
+                <th>Nama Kegiatan</th>
+                <th>Durasi</th>
+                <th>Pendahulu</th>
+                <th>Mulai</th>
+                <th>Selesai</th>
+                <th>Float</th>
+                <th>Kritis</th>
+                <th>Resource</th>
+                <th class="th-actions">Aksi</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= JALUR KRITIS ======================== -->
+    <section class="tab-panel" id="tab-paths">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Semua Jalur &amp; Critical Path</h2>
+          <div class="legend">
+            <span><i class="sw sw-critical"></i> Jalur kritis</span>
+          </div>
+        </div>
+        <div id="paths-summary" class="inline-note"></div>
+        <div class="table-wrap">
+          <table id="path-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Jalur (urutan kegiatan)</th>
+                <th>Durasi per node</th>
+                <th>Total estimasi</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="hint" id="paths-note"></p>
+      </div>
+    </section>
+
+    <!-- ============================= PERT ============================ -->
+    <section class="tab-panel" id="tab-pert">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Diagram PERT</h2>
+          <div class="legend">
+            <span><i class="sw sw-critical"></i> Node pada jalur kritis</span>
+            <span><i class="sw sw-dep"></i> Panah ketergantungan (FS/SS+delay)</span>
+          </div>
+        </div>
+        <div id="pert-chart" class="gantt-host"></div>
+      </div>
+    </section>
+
+    <!-- =========================== RESOURCE ========================== -->
+    <section class="tab-panel" id="tab-resources">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Resource / Anggota Tim</h2>
+          <button class="btn btn-primary" id="btn-add-resource" type="button">+ Resource</button>
+        </div>
+
+        <form id="resource-form" class="form-grid hidden">
+          <input type="hidden" id="resource-id" />
+          <div class="field">
+            <label for="resource-name">Nama *</label>
+            <input id="resource-name" required maxlength="200" placeholder="mis. Andi Pratama" />
+          </div>
+          <div class="field">
+            <label for="resource-email">Email</label>
+            <input id="resource-email" type="email" maxlength="120" placeholder="nama@contoh.com" />
+          </div>
+          <div class="field">
+            <label for="resource-phone">Telepon</label>
+            <input id="resource-phone" maxlength="25" placeholder="0812-3456-7890" />
+          </div>
+          <div class="field">
+            <label for="resource-position">Posisi</label>
+            <input id="resource-position" maxlength="80" placeholder="mis. Backend Developer" />
+          </div>
+          <div class="field">
+            <label for="resource-rate">Tarif per hari *</label>
+            <input id="resource-rate" type="number" min="0" step="1000" value="0" required />
+          </div>
+          <div class="field field-actions">
+            <button class="btn btn-primary" type="submit">Simpan</button>
+            <button class="btn" id="btn-cancel-resource" type="button">Batal</button>
+          </div>
+        </form>
+
+        <div class="table-wrap">
+          <table id="resource-table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Telepon</th>
+                <th>Posisi</th>
+                <th>Tarif/Hari</th>
+                <th>Beban (hari)</th>
+                <th>Estimasi Biaya</th>
+                <th class="th-actions">Aksi</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Penugasan Resource ke Kegiatan</h2></div>
+        <div class="field">
+          <label for="assign-activity">Kegiatan</label>
+          <select id="assign-activity"></select>
+        </div>
+        <div id="assign-list" class="assign-list"></div>
+      </div>
+    </section>
+
+    <!-- ========================== PENGATURAN ========================= -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="panel">
+        <div class="panel-head"><h2>Detail Proyek</h2></div>
+        <form id="project-form" class="form-grid">
+          <div class="field field-wide">
+            <label for="project-name">Nama proyek *</label>
+            <input id="project-name" required maxlength="200" />
+          </div>
+          <div class="field">
+            <label for="project-start">Tanggal mulai *</label>
+            <input id="project-start" type="date" required />
+          </div>
+          <div class="field field-wide">
+            <label>Hari weekend (libur pekan)</label>
+            <div class="weekend-picker" id="weekend-picker"></div>
+          </div>
+          <div class="field field-actions">
+            <button class="btn btn-primary" type="submit">Simpan proyek</button>
+            <button class="btn btn-danger" id="btn-delete-project" type="button">Hapus proyek</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Hari Libur</h2></div>
+        <form id="holiday-form" class="form-inline">
+          <div class="field">
+            <label for="holiday-date">Tanggal</label>
+            <input id="holiday-date" type="date" required />
+          </div>
+          <div class="field">
+            <label for="holiday-name">Keterangan</label>
+            <input id="holiday-name" maxlength="120" placeholder="mis. Hari Libur Nasional" />
+          </div>
+          <button class="btn btn-primary" type="submit">+ Tambah</button>
+        </form>
+        <div class="table-wrap">
+          <table id="holiday-table">
+            <thead>
+              <tr><th>Tanggal</th><th>Keterangan</th><th class="th-actions">Aksi</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="hint">Weekend dan hari libur otomatis dilewati saat menghitung tanggal mulai &amp; selesai kegiatan.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/gantt.js"></script>
+  <script src="js/pert.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "mini-gantt-project",
+  "version": "1.0.0",
+  "description": "Aplikasi web penjadwalan proyek pengembangan perangkat lunak: Gantt, Critical Path (CPM), dan PERT.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node src/seed.js --reset",
+    "test": "node --test"
+  },
+  "keywords": [
+    "gantt",
+    "critical-path",
+    "pert",
+    "scheduling",
+    "project-management"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Chat logs
+chat-messages.json
+
+# Database / file storage
+data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Logs & OS junk
+*.log
+.DS_Store
+Thumbs.db
