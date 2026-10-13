@@ -10,22 +10,22 @@ CRUD proyek/kegiatan/resource, perhitungan tanggal otomatis (lewati weekend & ha
 ## Tampilan Aplikasi
 
 ### Gantt Chart
-![Gantt chart](docs/gantt.png)
+![Gantt chart](docs/gantt.jpeg)
 
 ### Jadwal Kegiatan
-![Jadwal kegiatan](docs/gantt2.png)
+![Jadwal kegiatan](docs/gantt2.jpeg)
 
 ### Analisis Critical Path
-![Critical path](docs/gantt3.png)
+![Critical path](docs/gantt3.jpeg)
 
 ### Diagram PERT
-![Diagram PERT](docs/gantt4.png)
+![Diagram PERT](docs/gantt4.jpeg)
 
 ### Resource
-![Resource](docs/gantt5.png)
+![Resource](docs/gantt5.jpeg)
 
 ### Pengaturan
-![Pengaturan](docs/gantt6.png)
+![Pengaturan](docs/gantt6.jpeg)
 
 
 
