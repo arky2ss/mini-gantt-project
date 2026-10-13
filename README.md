@@ -10,7 +10,7 @@ CRUD proyek/kegiatan/resource, perhitungan tanggal otomatis (lewati weekend & ha
 ## Tampilan Aplikasi
 
 ### Gantt Chart
-![Gantt chart](docs/gantt.jpeg)
+![Gantt chart](gantt.png.jpeg)
 
 ### Jadwal Kegiatan
 ![Jadwal kegiatan](docs/gantt2.jpeg)
