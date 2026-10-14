@@ -42,8 +42,9 @@ node -v
 ## Instalasi
 
 ```bash
-# 1. masuk ke folder proyek
-cd mini-gantt-app
+# 1. clone repository lalu masuk ke folder proyek
+git clone https://github.com/arky2ss/mini-gantt-project.git
+cd mini-gantt-project
 
 # 2. instal dependency (hanya express)
 npm install
