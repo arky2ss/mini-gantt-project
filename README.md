@@ -59,8 +59,8 @@ npm start
 Buka **http://localhost:3000** di browser.
 
 > Pada saat pertama dijalankan, database SQLite dibuat otomatis di `data/mini-gantt.db`
-> dan **data contoh** dimasukkan: proyek **"Sistem Informasi Kelola Pemberkasan"**
-> dengan kegiatan **A–J** sehingga jalur kritis **B-E-H-J = 33 hari**.
+> dan **data contoh** dimasukkan: proyek **"Nexus Realm: Online RPG"**
+> dengan **15 kegiatan (A–O)** sehingga jalur kritis **A→D→G→J→M→N→O = 47 hari kerja**.
 >
 > Untuk mengembalikan data contoh kapan pun: `npm run seed`
 > (me-reset seluruh isi database). Untuk memakai database lain: set env `DB_PATH`, port: `PORT`.
@@ -72,7 +72,7 @@ Buka **http://localhost:3000** di browser.
 | `npm start`     | Jalankan server (default port 3000)                 |
 | `npm run dev`   | Jalankan server dengan auto-reload (`--watch`)      |
 | `npm test`      | Jalankan seluruh unit test (`node --test`)          |
-| `npm run seed`  | Reset & isi ulang data contoh A–J                   |
+| `npm run seed`  | Reset & isi ulang data contoh A–O                   |
 
 ---
 
@@ -90,7 +90,7 @@ Buka **http://localhost:3000** di browser.
 5. **Critical path** — tabel **semua jalur** (urutan, durasi per node, total estimasi)
    dengan penanda jalur kritis; float/total juga tampil di tabel kegiatan & Gantt.
 6. **Diagram PERT** — node (kegiatan) dan panah (FS/SS + delay) terstruktur per tahap.
-7. **Data contoh bawaan** — kegiatan A–J, jalur kritis **B-E-H-J = 33 hari**.
+7. **Data contoh bawaan** — 15 kegiatan A–O, jalur kritis **A→D→G→J→M→N→O = 47 hari**.
 8. **Validasi input, penanganan error, dan deteksi dependensi melingkar** (ditolak HTTP 400
    lengkap dengan urutan siklusnya).
 9. **Unit test** untuk perhitungan critical path, kalender kerja, dan API.
@@ -99,23 +99,29 @@ Buka **http://localhost:3000** di browser.
 
 ## Data contoh (bawaan)
 
-Proyek: **Sistem Informasi Kelola Pemberkasan** — mulai **5 Jan 2026** (Senin), weekend Sabtu & Minggu.
+Proyek: **Nexus Realm: Online RPG** — mulai **5 Jan 2026** (Senin), weekend Sabtu & Minggu.
+Hari libur: Tahun Baru Imlek (28 Jan), Nyepi (19–20 Mar), Wafat Isa Almasih (2 Apr).
 
-| Kode | Kegiatan                         | Durasi | Pendahulu        |
-|------|----------------------------------|--------|------------------|
-| A    | Analisis Kebutuhan               | 1      | -                |
-| B    | Perancangan Basis Data           | 2      | -                |
-| C    | Perancangan Antarmuka            | 3      | -                |
-| D    | Pengembangan Modul Input         | 5      | A (FS)           |
-| E    | Pengembangan Modul Proses        | 7      | B (FS)           |
-| F    | Pengembangan Modul Laporan       | 4      | B (FS)           |
-| G    | Integrasi Modul                  | 12     | C (FS)           |
-| H    | Pengujian Integrasi              | 21     | D, E (FS)        |
-| I    | Penyusunan Dokumentasi           | 2      | G (FS)           |
-| J    | Implementasi dan Serah Terima    | 3      | H, F, I (FS)     |
+| Kode | Kegiatan                           | Durasi | Pendahulu              |
+|------|------------------------------------|--------|------------------------|
+| A    | Game Design Document (GDD)         | 3      | —                      |
+| B    | Riset Pasar & Analisis Kompetitor  | 2      | —                      |
+| C    | Desain Karakter & Aset Visual      | 5      | —                      |
+| D    | Arsitektur Game Engine & Server    | 8      | A (FS)                 |
+| E    | Desain Mekanik Gameplay            | 6      | A, B (FS)              |
+| F    | Desain UI/UX & HUD                 | 4      | B (FS), C (FS+1)       |
+| G    | Pengembangan Core Engine           | 10     | D, E (FS)              |
+| H    | Pembuatan Aset 3D & Animasi        | 9      | C (FS), D (SS+2)       |
+| I    | Pengembangan UI Front-End          | 5      | F (FS)                 |
+| J    | Pengembangan Sistem Multiplayer    | 12     | G, H (FS)              |
+| K    | Integrasi Aset ke Engine           | 6      | G, I (FS)              |
+| L    | Pengembangan Backend & Database    | 8      | I (FS), K (SS+2)       |
+| M    | Quality Assurance & Bug Fixing     | 5      | J, K (FS)              |
+| N    | Beta Test & Optimasi Performa      | 4      | L, M (FS)              |
+| O    | Rilis & Deployment ke Platform     | 5      | N (FS)                 |
 
-**Jalur kritis: B → E → H → J = 2 + 7 + 21 + 3 = 33 hari kerja.**
-Empat jalur sumber→akhir ditemukan: `B-E-H-J (33)`, `A-D-H-J (30)`, `C-G-I-J (20)`, `B-F-J (9)`.
+**Jalur kritis: A → D → G → J → M → N → O = 3+8+10+12+5+4+5 = 47 hari kerja.**
+Proyek selesai estimasi: **11 Maret 2026**. Estimasi biaya total: **Rp 108.800.000**.
 
 ---
 

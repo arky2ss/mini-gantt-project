@@ -2,50 +2,80 @@
 
 /**
  * Data contoh bawaan:
- * Proyek "Sistem Informasi Kelola Pemberkasan" dengan kegiatan A..J
- * sehingga jalur kritis B-E-H-J = 2 + 7 + 21 + 3 = 33 hari.
+ * Proyek "Nexus Realm: Online RPG" — game development dengan 15 kegiatan (A..O).
+ *
+ * Jalur kritis utama: A → D → G → J → M → N → O
+ * = 3 + 8 + 10 + 12 + 5 + 4 + 5 = 47 hari kerja
  */
 
 const { openDb, all, run, DEFAULT_DB_PATH } = require('./db');
 
 const SAMPLE_PROJECT = {
-  name: 'Sistem Informasi Kelola Pemberkasan',
+  name: 'Nexus Realm: Online RPG',
   start_date: '2026-01-05', // Senin
   weekend_days: '0,6',
 };
 
 const SAMPLE_HOLIDAYS = [
-  { date: '2026-02-16', name: 'Hari Libur Nasional (contoh)' },
-  { date: '2026-03-29', name: 'Hari Libur (contoh)' },
+  { date: '2026-01-28', name: 'Tahun Baru Imlek 2577' },
+  { date: '2026-03-19', name: 'Hari Raya Nyepi' },
+  { date: '2026-03-20', name: 'Cuti Bersama Nyepi' },
+  { date: '2026-04-02', name: 'Wafat Isa Almasih' },
 ];
 
-/** [kode, nama, durasi, [[pendahulu, tipe, delay], ...]] */
+/**
+ * [kode, nama, durasi_hari_kerja, [[kode_pendahulu, tipe, delay], ...]]
+ *
+ * Struktur dependensi:
+ *  A  → D, E
+ *  B  → E, F
+ *  C  → F, H
+ *  D  → G, H
+ *  E  → G
+ *  F  → I
+ *  G  → J, K
+ *  H  → J
+ *  I  → K, L
+ *  J  → M
+ *  K  → M, L
+ *  L  → N
+ *  M  → N
+ *  N  → O
+ */
 const SAMPLE_ACTIVITIES = [
-  ['A', 'Analisis Kebutuhan', 1, []],
-  ['B', 'Perancangan Basis Data', 2, []],
-  ['C', 'Perancangan Antarmuka', 3, []],
-  ['D', 'Pengembangan Modul Input', 5, [['A', 'FS', 0]]],
-  ['E', 'Pengembangan Modul Proses', 7, [['B', 'FS', 0]]],
-  ['F', 'Pengembangan Modul Laporan', 4, [['B', 'FS', 0]]],
-  ['G', 'Integrasi Modul', 12, [['C', 'FS', 0]]],
-  ['H', 'Pengujian Integrasi', 21, [['D', 'FS', 0], ['E', 'FS', 0]]],
-  ['I', 'Penyusunan Dokumentasi', 2, [['G', 'FS', 0]]],
-  ['J', 'Implementasi dan Serah Terima', 3, [['H', 'FS', 0], ['F', 'FS', 0], ['I', 'FS', 0]]],
+  // kode  nama                                    dur  pendahulu
+  ['A', 'Game Design Document (GDD)',               3,  []],
+  ['B', 'Riset Pasar & Analisis Kompetitor',        2,  []],
+  ['C', 'Desain Karakter & Aset Visual',            5,  []],
+  ['D', 'Arsitektur Game Engine & Server',          8,  [['A', 'FS', 0]]],
+  ['E', 'Desain Mekanik Gameplay',                  6,  [['A', 'FS', 0], ['B', 'FS', 0]]],
+  ['F', 'Desain UI/UX & HUD',                      4,  [['B', 'FS', 0], ['C', 'FS', 1]]],
+  ['G', 'Pengembangan Core Engine',                10,  [['D', 'FS', 0], ['E', 'FS', 0]]],
+  ['H', 'Pembuatan Aset 3D & Animasi',              9,  [['C', 'FS', 0], ['D', 'SS', 2]]],
+  ['I', 'Pengembangan UI Front-End',               5,  [['F', 'FS', 0]]],
+  ['J', 'Pengembangan Sistem Multiplayer',         12,  [['G', 'FS', 0], ['H', 'FS', 0]]],
+  ['K', 'Integrasi Aset ke Engine',                6,  [['G', 'FS', 0], ['I', 'FS', 0]]],
+  ['L', 'Pengembangan Backend & Database',          8,  [['I', 'FS', 0], ['K', 'SS', 2]]],
+  ['M', 'Quality Assurance & Bug Fixing',           5,  [['J', 'FS', 0], ['K', 'FS', 0]]],
+  ['N', 'Beta Test & Optimasi Performa',            4,  [['L', 'FS', 0], ['M', 'FS', 0]]],
+  ['O', 'Rilis & Deployment ke Platform',           5,  [['N', 'FS', 0]]],
 ];
 
 const SAMPLE_RESOURCES = [
-  ['Andi Pratama', 'andi.pratama@example.com', '0812-1111-2222', 'Project Manager', 900000],
-  ['Budi Santoso', 'budi.santoso@example.com', '0812-3333-4444', 'Backend Developer', 750000],
-  ['Citra Lestari', 'citra.lestari@example.com', '0812-5555-6666', 'Frontend Developer', 700000],
-  ['Dewi Anggraini', 'dewi.anggraini@example.com', '0812-7777-8888', 'QA Engineer', 650000],
+  ['Rizky Nugraha',    'rizky.nugraha@nexusrealm.id',    '0811-2222-3333', 'Game Director',        1200000],
+  ['Sari Wulandari',   'sari.wulandari@nexusrealm.id',   '0811-4444-5555', 'Game Engineer',        1000000],
+  ['Bimo Adityawan',   'bimo.adityawan@nexusrealm.id',   '0811-6666-7777', 'Senior Artist',         850000],
+  ['Fera Kusumastuti', 'fera.kusumastuti@nexusrealm.id', '0811-8888-9999', 'UI/UX Designer',        750000],
+  ['Dimas Prasetyo',   'dimas.prasetyo@nexusrealm.id',   '0812-1010-2020', 'QA Engineer',           700000],
 ];
 
-/** resource name -> kode kegiatan yang ditugaskan */
+/** resource name → kode kegiatan yang ditugaskan */
 const SAMPLE_ASSIGNMENTS = [
-  ['Andi Pratama', ['A', 'B', 'J']],
-  ['Budi Santoso', ['B', 'D', 'E', 'G']],
-  ['Citra Lestari', ['C', 'F', 'I']],
-  ['Dewi Anggraini', ['H', 'I']],
+  ['Rizky Nugraha',    ['A', 'B', 'E', 'N', 'O']],
+  ['Sari Wulandari',   ['D', 'G', 'J', 'L', 'M']],
+  ['Bimo Adityawan',   ['C', 'H', 'K']],
+  ['Fera Kusumastuti', ['C', 'F', 'I', 'K']],
+  ['Dimas Prasetyo',   ['M', 'N', 'O']],
 ];
 
 function tableCount(db, table) {
@@ -151,10 +181,10 @@ if (require.main === module) {
   const action = process.argv.includes('--reset') ? 'reset' : 'seed';
   if (action === 'reset') {
     seedSample(db);
-    console.log('Database di-reset dan diisi ulang dengan data contoh (kegiatan A..J).');
+    console.log('Database di-reset dan diisi ulang dengan data contoh: Nexus Realm: Online RPG (kegiatan A..O, 15 kegiatan).');
   } else {
     const res = seedIfEmpty(db);
-    console.log(res.seeded ? 'Data contoh dimasukkan.' : 'Database sudah berisi, tidak ada perubahan.');
+    console.log(res.seeded ? 'Data contoh Nexus Realm dimasukkan.' : 'Database sudah berisi, tidak ada perubahan.');
   }
   db.close();
 }
